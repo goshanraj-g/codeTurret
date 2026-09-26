@@ -34,6 +34,15 @@ public class Scan {
     @Column(name = "findings_count")
     private int findingsCount = 0;
 
+    @Column(name = "units_analyzed")
+    private Integer unitsAnalyzed;
+
+    @Column(name = "lines_analyzed")
+    private Integer linesAnalyzed;
+
+    @Column(name = "static_hits")
+    private Integer staticHits;
+
     @Column(name = "started_at")
     private Instant startedAt;
 

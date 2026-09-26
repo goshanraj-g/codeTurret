@@ -181,8 +181,11 @@ Ground truth entry: `{file, startLine, endLine, cwe, note}`.
 |---|---|---|
 | **Candidate recall@budget** | Share of ground-truth vulns whose lines fall inside code *sent* to the LLM, at 500/1000/2000/3000-line budgets | No |
 | **Lines sent** | Total lines of code sent to the LLM | No |
-| **Finding recall / precision** | A finding matches ground truth when it is in the same file and within the labelled range ±3 lines | Yes |
-| **Wall time** | Seconds per scan | Yes |
+| **Finding recall / precision** | A finding matches ground truth when it is in the same file and within the labelled range ±3 lines | Yes (*planned*: not yet implemented) |
+| **Wall time** | Seconds per scan | Yes (*planned*) |
+
+End-to-end (LLM) metrics are not implemented yet. The verifier is covered by fake-LLM tests
+(`LlmVerifierTest`, `DetectionEngineTest`), but nothing here measures Gemini's accuracy on the benchmark.
 
 Candidate recall runs offline in CI (`EvalRunner --mode candidates`). It compares selectors (legacy regex,
 Semgrep only, ML only, hybrid) on the same budget, which is how the ranker weights are tuned.

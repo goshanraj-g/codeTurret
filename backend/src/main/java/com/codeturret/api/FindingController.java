@@ -38,6 +38,10 @@ public class FindingController {
             Map.entry("confidence",   f.getConfidence() != null ? f.getConfidence() : 0.0),
             Map.entry("commitHash",   f.getCommitHash() != null ? f.getCommitHash() : ""),
             Map.entry("commitAuthor", f.getCommitAuthor() != null ? f.getCommitAuthor() : ""),
+            Map.entry("source",       f.getSource() != null ? f.getSource() : ""),
+            Map.entry("cweId",        f.getCweId() != null ? f.getCweId() : ""),
+            Map.entry("mlScore",      f.getMlScore() != null ? f.getMlScore() : -1.0),
+            Map.entry("signals",      f.getSignals() != null ? f.getSignals() : "{}"),
             Map.entry("createdAt",    f.getCreatedAt())
         );
     }
