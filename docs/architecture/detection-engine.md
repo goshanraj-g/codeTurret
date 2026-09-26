@@ -148,7 +148,7 @@ score = 0.35·ml + 0.30·static + 0.15·reachability + 0.10·git + 0.10·structu
 
 Selection: **every unit with a static hit is selected** (Semgrep findings always get verified), then the
 highest-scoring remaining units are added until the **line budget** (`engine.line-budget`, default 3000
-lines) is spent. The weights live in config and are tuned against the benchmark, not by intuition.
+lines) is spent. The weights live in config. Section 4.1 shows how each one was checked with an ablation.
 
 *Tradeoff:* a line budget instead of a file cap makes cost predictable and lets 40 small risky functions
 from 40 files beat 25 whole files.
@@ -188,6 +188,22 @@ Candidate recall runs offline in CI (`EvalRunner --mode candidates`). It compare
 Semgrep only, ML only, hybrid) on the same budget, which is how the ranker weights are tuned.
 
 Results are written to `eval/results/candidates.md` (committed, so each PR diff shows the metric change) and summarized in the README.
+
+### 4.1 Results so far (candidate recall, 30 labelled vulns)
+
+| Selector | @250 lines | @1000 lines |
+|---|---:|---:|
+| legacy regex (v1) | 40% | 63% |
+| structure (parse + sinks + reachability) | 63% | 83% |
+| ML classifier alone | 43% | 77% |
+| Semgrep alone | 60% | 87% |
+| **hybrid** | **70%** | **93%** |
+| hybrid without Semgrep | 70% | 90% |
+
+**Ablation** (`eval/results/ablation.md`, each signal's weight set to zero): reachability matters most
+(93% → 83% @1000 without it). ML helps only at larger budgets (97% → 93% @2000). Removing structure slightly
+*helps* at 1000 lines because it overlaps with Semgrep. With 30 vulns a one-vuln change is noise, so the
+default weights are **not** re-tuned to the benchmark. Doing that would overfit it.
 
 ## 5. Configuration
 
