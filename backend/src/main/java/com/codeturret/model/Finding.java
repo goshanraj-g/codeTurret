@@ -61,6 +61,20 @@ public class Finding {
     @Column(name = "commit_date")
     private Instant commitDate;
 
+    /** LLM, STATIC_LLM, or STATIC; see EngineFinding.Source. Null for findings from the v1 pipeline. */
+    @Column(length = 20)
+    private String source;
+
+    @Column(name = "cwe_id", length = 20)
+    private String cweId;
+
+    @Column(name = "ml_score")
+    private Double mlScore;
+
+    /** JSON object of the ranking signals for the analysed unit. */
+    @Column(columnDefinition = "TEXT")
+    private String signals;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 }

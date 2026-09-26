@@ -29,12 +29,25 @@ gemini:
   api-key: ${GEMINI_API_KEY}
   base-url: https://generativelanguage.googleapis.com/v1beta
   model:
-    flash: gemini-2.0-flash
+    flash: gemini-2.5-flash
     pro: gemini-2.5-pro
   timeout-seconds: 60
   max-retries: 2
-  rate-limit-delay-ms: 7000
+  max-concurrency: ${GEMINI_MAX_CONCURRENCY:4}
   deep-scan-threshold: 0.7
+
+engine:
+  line-budget: ${ENGINE_LINE_BUDGET:3000}
+  weights:
+    ml: 0.35
+    static-analysis: 0.30
+    reachability: 0.15
+    git: 0.10
+    structure: 0.10
+  semgrep:
+    enabled: ${SEMGREP_ENABLED:true}
+    command: ${SEMGREP_CMD:semgrep}
+    timeout-seconds: 300
 
 github:
   api-url: https://api.github.com
