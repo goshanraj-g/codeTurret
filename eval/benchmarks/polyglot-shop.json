@@ -1,0 +1,21 @@
+{
+  "name": "polyglot-shop",
+  "description": "Hand-written Flask + Express/React + Spring app. Probes keyword-free vulns and safe look-alikes.",
+  "source": { "type": "fixture", "path": "eval/fixtures/polyglot-shop" },
+  "vulns": [
+    { "id": "py-path-traversal", "file": "shop/storage.py", "startLine": 8, "endLine": 13, "cwe": "CWE-22", "note": "user-controlled name joined onto ASSET_DIR and served" },
+    { "id": "py-sqli-region", "file": "shop/reports.py", "startLine": 15, "endLine": 19, "cwe": "CWE-89", "note": "f-string SQL with request arg" },
+    { "id": "py-ssti", "file": "shop/greetings.py", "startLine": 4, "endLine": 6, "cwe": "CWE-1336", "note": "user input concatenated into Jinja template source" },
+    { "id": "py-pickle-cookie", "file": "shop/cart.py", "startLine": 9, "endLine": 12, "cwe": "CWE-502", "note": "pickle.loads of cookie" },
+    { "id": "py-ssrf-webhook", "file": "shop/webhooks.py", "startLine": 6, "endLine": 9, "cwe": "CWE-918", "note": "server fetches caller-supplied URL" },
+    { "id": "js-reflected-xss", "file": "web/routes/search.js", "startLine": 4, "endLine": 10, "cwe": "CWE-79", "note": "query term echoed into HTML" },
+    { "id": "js-command-injection", "file": "web/routes/admin.js", "startLine": 8, "endLine": 10, "cwe": "CWE-78", "note": "request body concatenated into shell command" },
+    { "id": "ts-prototype-pollution", "file": "web/lib/merge.ts", "startLine": 7, "endLine": 16, "cwe": "CWE-1321", "note": "recursive merge of req.body without __proto__/constructor guard" },
+    { "id": "ts-open-redirect", "file": "web/lib/redirect.ts", "startLine": 11, "endLine": 13, "cwe": "CWE-601", "note": "redirect to unvalidated ?next" },
+    { "id": "tsx-dom-xss", "file": "web/components/Comment.tsx", "startLine": 15, "endLine": 15, "cwe": "CWE-79", "note": "user comment body rendered as raw HTML" },
+    { "id": "java-sqli", "file": "billing/src/main/java/shop/billing/InvoiceRepository.java", "startLine": 17, "endLine": 19, "cwe": "CWE-89", "note": "string-concatenated JDBC query" },
+    { "id": "java-xxe", "file": "billing/src/main/java/shop/billing/ExportService.java", "startLine": 17, "endLine": 20, "cwe": "CWE-611", "note": "DocumentBuilderFactory without disabling DTDs on uploaded XML" },
+    { "id": "java-weak-random-token", "file": "billing/src/main/java/shop/billing/TokenService.java", "startLine": 10, "endLine": 13, "cwe": "CWE-330", "note": "java.util.Random for portal access token" },
+    { "id": "java-trust-all-tls", "file": "billing/src/main/java/shop/billing/PaymentClient.java", "startLine": 14, "endLine": 22, "cwe": "CWE-295", "note": "trust-all X509TrustManager" }
+  ]
+}

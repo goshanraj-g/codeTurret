@@ -185,7 +185,7 @@ Ground truth entry: `{file, startLine, endLine, cwe, note}`.
 Candidate recall runs offline in CI (`EvalRunner --mode candidates`). It compares selectors (legacy regex,
 Semgrep only, ML only, hybrid) on the same budget, which is how the ranker weights are tuned.
 
-Results are written to `eval/results/<date>-<mode>.md` and summarized in the README.
+Results are written to `eval/results/candidates.md` (committed, so each PR diff shows the metric change) and summarized in the README.
 
 ## 5. Configuration
 
