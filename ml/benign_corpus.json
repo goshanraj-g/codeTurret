@@ -1,0 +1,77 @@
+{
+  "description": "Mature open-source projects used as (noisy) negatives. Units are extracted with the backend's CodeParser so training sees the same unit shapes as inference. Never add benchmark repos here.",
+  "repos": [
+    {
+      "name": "express",
+      "url": "https://github.com/expressjs/express.git",
+      "commit": "9a34acf03cb818ff3f8bc40e44176e277a25cbb9",
+      "split": "train"
+    },
+    {
+      "name": "fastify",
+      "url": "https://github.com/fastify/fastify.git",
+      "commit": "c3051e5b60c0e0e95ac0638fae342e82099fe534",
+      "split": "train"
+    },
+    {
+      "name": "axios",
+      "url": "https://github.com/axios/axios.git",
+      "commit": "961241f6c19798eff16b0869486c125430a17961",
+      "split": "train"
+    },
+    {
+      "name": "flask",
+      "url": "https://github.com/pallets/flask.git",
+      "commit": "d73fa1cdcbd8b1465c151db8924ba58b1dd14e35",
+      "split": "train"
+    },
+    {
+      "name": "requests",
+      "url": "https://github.com/psf/requests.git",
+      "commit": "611c6162cbc4ac2020a2f91c7cfa4f3abf9bbb60",
+      "split": "train"
+    },
+    {
+      "name": "click",
+      "url": "https://github.com/pallets/click.git",
+      "commit": "06b2a678741131fd577ce170e23e5ca0aeba0309",
+      "split": "train"
+    },
+    {
+      "name": "spring-data-examples",
+      "url": "https://github.com/spring-projects/spring-data-examples.git",
+      "commit": "7747029e6157cb780862826b6ae87c88d7a4df3c",
+      "split": "train"
+    },
+    {
+      "name": "gson",
+      "url": "https://github.com/google/gson.git",
+      "commit": "854c8255b625cf1e13c701a83ea9ccb4caaa576a",
+      "split": "train"
+    },
+    {
+      "name": "koa",
+      "url": "https://github.com/koajs/koa.git",
+      "commit": "824c1cf8de9a91a2941973b25dc8a3d3029b9e4f",
+      "split": "test"
+    },
+    {
+      "name": "got",
+      "url": "https://github.com/sindresorhus/got.git",
+      "commit": "e1d87d2ced01d5b7d855a7dc8b091bf7b014a1e4",
+      "split": "test"
+    },
+    {
+      "name": "httpx",
+      "url": "https://github.com/encode/httpx.git",
+      "commit": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+      "split": "test"
+    },
+    {
+      "name": "spring-petclinic",
+      "url": "https://github.com/spring-projects/spring-petclinic.git",
+      "commit": "818c4136ea971c21674525f9053de0d9c7ad8cfe",
+      "split": "test"
+    }
+  ]
+}
