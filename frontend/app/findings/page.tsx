@@ -55,7 +55,7 @@ export default function FindingsPage() {
                 <div className="grid gap-4">
                     {scans.map((scan, i) => (
                         <motion.div
-                            key={scan.scan_id}
+                            key={scan.scanId}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.05 }}

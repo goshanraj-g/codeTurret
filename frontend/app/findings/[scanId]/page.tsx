@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle, Code, Bug, ArrowLeft, GitCommit, Wand2, ExternalLink } from "lucide-react";
+import { CheckCircle, Code, Bug, ArrowLeft, GitCommit, Wand2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { FindingSource, SignalBreakdown, SourceBadge, parseSignals } from "@/components/SignalBreakdown";
 
 interface Finding {
     id: string;
@@ -18,6 +19,10 @@ interface Finding {
     fixSuggestion: string;
     commitHash: string | null;
     commitAuthor: string | null;
+    confidence: number;
+    source: FindingSource;
+    cweId: string;
+    signals: string;
 }
 
 interface FixStatus {
@@ -174,6 +179,19 @@ export default function FindingDetailsPage() {
                 </motion.div>
             )}
 
+            {!loading && findings.some(f => f.source) && (
+                <div className="mb-6 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                    {(["STATIC_LLM", "LLM", "STATIC"] as const).map(src => {
+                        const count = findings.filter(f => f.source === src).length;
+                        return count > 0 ? (
+                            <span key={src} className="flex items-center gap-2">
+                                <SourceBadge source={src} /> {count}
+                            </span>
+                        ) : null;
+                    })}
+                </div>
+            )}
+
             {loading ? (
                 <div className="text-muted-foreground">Loading findings...</div>
             ) : findings.length === 0 ? (
@@ -197,11 +215,26 @@ export default function FindingDetailsPage() {
                             {/* Header */}
                             <div className="flex items-start justify-between border-b border-white/5 p-4 bg-white/5">
                                 <div className="flex gap-4">
-                                    <div className={cn("rounded-md px-2 py-1 text-xs font-bold border", getSeverityColor(finding.severity))}>
-                                        {finding.severity}
+                                    <div className="flex flex-col items-start gap-1.5">
+                                        <div className={cn("rounded-md px-2 py-1 text-xs font-bold border", getSeverityColor(finding.severity))}>
+                                            {finding.severity}
+                                        </div>
+                                        <SourceBadge source={finding.source} />
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-white">{finding.vulnType}</h3>
+                                        <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                                            {finding.cweId && /^CWE-\d+$/.test(finding.cweId) && (
+                                                <a
+                                                    href={`https://cwe.mitre.org/data/definitions/${finding.cweId.slice(4)}.html`}
+                                                    target="_blank" rel="noopener noreferrer"
+                                                    className="font-mono hover:text-white hover:underline"
+                                                >
+                                                    {finding.cweId}
+                                                </a>
+                                            )}
+                                            {finding.confidence > 0 && <span>{Math.round(finding.confidence * 100)}% confidence</span>}
+                                        </div>
                                         <div className="mt-1 font-mono text-xs text-muted-foreground">
                                             {finding.filePath}:{finding.lineNumber}
                                         </div>
@@ -232,6 +265,8 @@ export default function FindingDetailsPage() {
                                         </pre>
                                     </div>
                                 )}
+
+                                <SignalBreakdown signals={parseSignals(finding.signals)} />
 
                                 {finding.fixSuggestion && (
                                     <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3">
