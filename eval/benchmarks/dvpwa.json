@@ -1,0 +1,11 @@
+{
+  "name": "dvpwa",
+  "description": "Damn Vulnerable Python Web App (aiohttp + Postgres).",
+  "source": { "type": "git", "url": "https://github.com/anxolerd/dvpwa.git", "commit": "a1d8f89fac2e57093189853c6527c2b01fc1d9c1" },
+  "vulns": [
+    { "id": "sqli-student-create", "file": "sqli/dao/student.py", "startLine": 42, "endLine": 45, "cwe": "CWE-89", "note": "%-formatted INSERT" },
+    { "id": "md5-passwords", "file": "sqli/dao/user.py", "startLine": 40, "endLine": 41, "cwe": "CWE-328", "note": "unsalted MD5 password hash" },
+    { "id": "jinja-autoescape-off", "file": "sqli/app.py", "startLine": 33, "endLine": 35, "cwe": "CWE-79", "note": "autoescape=False" },
+    { "id": "csrf-disabled", "file": "sqli/app.py", "startLine": 25, "endLine": 29, "cwe": "CWE-352", "note": "csrf_middleware not registered" }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "nodegoat",
+  "description": "OWASP NodeGoat (Express + MongoDB). Labels taken from the project's own A1-A10 tutorial; the repo contains hint comments.",
+  "source": { "type": "git", "url": "https://github.com/OWASP/NodeGoat.git", "commit": "c5cb68a7084e4ae7dcc60e6a98768720a81841e8" },
+  "vulns": [
+    { "id": "ssjs-eval", "file": "app/routes/contributions.js", "startLine": 32, "endLine": 34, "cwe": "CWE-95", "note": "eval of request body" },
+    { "id": "nosql-where", "file": "app/data/allocations-dao.js", "startLine": 76, "endLine": 79, "cwe": "CWE-943", "note": "threshold interpolated into $where" },
+    { "id": "idor-allocations", "file": "app/routes/allocations.js", "startLine": 15, "endLine": 23, "cwe": "CWE-639", "note": "userId from URL params instead of session" },
+    { "id": "ssrf-research", "file": "app/routes/research.js", "startLine": 15, "endLine": 16, "cwe": "CWE-918", "note": "fetches req.query.url" },
+    { "id": "open-redirect", "file": "app/routes/index.js", "startLine": 72, "endLine": 72, "cwe": "CWE-601", "note": "res.redirect(req.query.url)" },
+    { "id": "missing-admin-check", "file": "app/routes/index.js", "startLine": 55, "endLine": 56, "cwe": "CWE-285", "note": "benefits routes lack isAdmin middleware" },
+    { "id": "plaintext-password", "file": "app/data/user-dao.js", "startLine": 25, "endLine": 25, "cwe": "CWE-256", "note": "password stored as received" },
+    { "id": "plaintext-compare", "file": "app/data/user-dao.js", "startLine": 60, "endLine": 62, "cwe": "CWE-256", "note": "plaintext password comparison" },
+    { "id": "log-injection", "file": "app/routes/session.js", "startLine": 64, "endLine": 64, "cwe": "CWE-117", "note": "unsanitized username logged" },
+    { "id": "redos-routing", "file": "app/routes/profile.js", "startLine": 59, "endLine": 61, "cwe": "CWE-1333", "note": "nested quantifier regex on user input" },
+    { "id": "swig-autoescape-off", "file": "server.js", "startLine": 135, "endLine": 138, "cwe": "CWE-79", "note": "template autoescape disabled" },
+    { "id": "session-cookie-flags", "file": "server.js", "startLine": 78, "endLine": 102, "cwe": "CWE-1004", "note": "session cookie without httpOnly/secure; CSRF middleware commented out" }
+  ]
+}

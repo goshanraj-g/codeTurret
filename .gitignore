@@ -41,3 +41,5 @@ Thumbs.db
 # Windows reserved names
 nul
 NUL
+# Eval benchmark clones
+eval/.cache/
