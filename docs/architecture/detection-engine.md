@@ -108,13 +108,15 @@ code and the Java inference code implement the same spec. A **golden-vector test
 vectors, Java asserts equality) keeps them in sync.
 
 **Model:** logistic regression (scikit-learn), exported to **ONNX** and run in-process with
-**ONNX Runtime Java**. There is no Python service at scan time.
+**ONNX Runtime Java**. There is no Python service at scan time. ONNX Runtime is pinned to 1.18: newer builds
+crash on Windows inside the older `msvcp140.dll` that JDKs ship and load first.
 
 **Data:**
 | Dataset | What | Languages | Caveat |
 |---|---|---|---|
 | `DetectVul/CVEFixes` | Real functions from CVE fix commits, line-level labels | Python | Real, but one language |
-| `CyberNative/Code_Vulnerability_Security_DPO` | Vulnerable vs. fixed pairs | JS, Java, Python, and more | **Synthetic** (LLM-generated) and short |
+| `CyberNative/Code_Vulnerability_Security_DPO` | Vulnerable vs. fixed pairs | JS, Java, Python, and more | **Synthetic** (LLM-generated) and short; names leak labels, so they are scrubbed |
+| Benign corpus (`ml/benign_corpus.json`) | Functions from 12 mature OSS repos, extracted with our own `CodeParser` | JS, TS, Python, Java | Assumed non-vulnerable (noisy); whole repos held out for testing |
 
 Splits are by *source record*, not by row, so a vulnerable function and its fix never land on opposite
 sides of the split.

@@ -1,9 +1,11 @@
 package com.codeturret.eval;
 
 import com.codeturret.config.GitProperties;
+import com.codeturret.engine.ml.VulnClassifier;
 import com.codeturret.engine.parse.CodeParser;
 import com.codeturret.engine.select.CandidateSelector;
 import com.codeturret.engine.select.LegacyRegexSelector;
+import com.codeturret.engine.select.MlSelector;
 import com.codeturret.engine.select.StaticSelector;
 import com.codeturret.engine.select.StructureSelector;
 import com.codeturret.engine.staticanalysis.SemgrepRunner;
@@ -21,6 +23,7 @@ final class Selectors {
 
     private final GitProperties gitProps;
     private final CodeParser parser = new CodeParser();
+    private final VulnClassifier classifier = VulnClassifier.load();
     private final boolean semgrepAvailable;
     private final StaticAnalyzer semgrep;
 
@@ -38,6 +41,7 @@ final class Selectors {
     /** Selectors that can run in this environment. */
     List<String> available() {
         List<String> names = new ArrayList<>(List.of("legacy-regex", "structure"));
+        if (classifier.isLoaded()) names.add("ml");
         if (semgrepAvailable) names.add("semgrep");
         return names;
     }
@@ -47,6 +51,7 @@ final class Selectors {
             case "legacy-regex" -> new LegacyRegexSelector(gitProps);
             case "structure" -> new StructureSelector(parser);
             case "semgrep" -> new StaticSelector(parser, semgrep);
+            case "ml" -> new MlSelector(parser, classifier);
             default -> throw new IllegalArgumentException("Unknown selector: " + name + " (available: " + available() + ")");
         };
     }

@@ -1,0 +1,37 @@
+{
+  "model": "logistic-regression",
+  "C": 4.0,
+  "features": "hashed 1-2 grams, dim=262144",
+  "test/all": {
+    "n": 3861,
+    "positive_rate": 0.198,
+    "roc_auc": 0.968,
+    "pr_auc": 0.911,
+    "precision@0.5": 0.716,
+    "recall@0.5": 0.916,
+    "f1@0.5": 0.804
+  },
+  "test/cvefixes": {
+    "n": 1146,
+    "positive_rate": 0.075,
+    "roc_auc": 0.893,
+    "pr_auc": 0.651,
+    "precision@0.5": 0.698,
+    "recall@0.5": 0.512,
+    "f1@0.5": 0.591
+  },
+  "test/dpo": {
+    "n": 1356,
+    "positive_rate": 0.5,
+    "roc_auc": 0.937,
+    "pr_auc": 0.938,
+    "precision@0.5": 0.724,
+    "recall@0.5": 0.968,
+    "f1@0.5": 0.828
+  },
+  "test/benign-heldout-repos": {
+    "n": 1359,
+    "mean_score": 0.052,
+    "flagged@0.5": 0.006
+  }
+}

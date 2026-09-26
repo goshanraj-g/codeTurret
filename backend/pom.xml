@@ -19,6 +19,7 @@
 
     <properties>
         <java.version>21</java.version>
+        <exec.mainClass>com.codeturret.eval.EvalRunner</exec.mainClass>
         <tree-sitter.version>0.26.6</tree-sitter.version>
         <jgit.version>6.9.0.202403050737-r</jgit.version>
     </properties>
@@ -54,6 +55,13 @@
             <groupId>io.github.bonede</groupId>
             <artifactId>tree-sitter-tsx</artifactId>
             <version>0.23.2</version>
+        </dependency>
+
+        <!-- ONNX Runtime: runs the vulnerability classifier trained in ml/ -->
+        <dependency>
+            <groupId>com.microsoft.onnxruntime</groupId>
+            <artifactId>onnxruntime</artifactId>
+            <version>1.18.0</version>
         </dependency>
 
         <!-- Web -->
@@ -182,7 +190,6 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <configuration>
-                    <mainClass>com.codeturret.eval.EvalRunner</mainClass>
                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
                 </configuration>
             </plugin>
