@@ -28,7 +28,7 @@ import java.util.*;
  */
 public final class EvalRunner {
 
-    static final int[] BUDGETS = {500, 1000, 2000, 3000, CandidateEvaluator.UNLIMITED};
+    static final int[] BUDGETS = {250, 500, 1000, 2000, 3000, CandidateEvaluator.UNLIMITED};
 
     public static void main(String[] args) throws Exception {
         ((Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)).setLevel(Level.WARN);
@@ -63,7 +63,7 @@ public final class EvalRunner {
                 long millis = (System.nanoTime() - t0) / 1_000_000;
                 List<CandidateEvaluator.Result> results = new ArrayList<>();
                 for (int budget : BUDGETS) results.add(evaluator.evaluate(ranked, b.vulns(), budget));
-                report.add(b, selector.name(), results, millis);
+                report.add(b, repoLines(files), selector.name(), results, millis);
                 System.out.printf("%-14s %-16s recall@all=%d/%d  lines=%d  (%d ms)%n",
                     b.name(), selector.name(), results.get(results.size() - 1).coveredVulnIds().size(),
                     b.vulns().size(), results.get(results.size() - 1).linesSent(), millis);
@@ -74,6 +74,10 @@ public final class EvalRunner {
         Files.createDirectories(out.getParent());
         Files.writeString(out, report.toMarkdown());
         System.out.println("Wrote " + root.relativize(out));
+    }
+
+    private static int repoLines(List<SourceFile> files) {
+        return files.stream().mapToInt(SourceFile::lineCount).sum();
     }
 
     private static Map<String, String> parseArgs(String[] args) {

@@ -28,4 +28,14 @@ public record CodeUnit(
     public String id() {
         return file + ":" + startLine + "-" + endLine;
     }
+
+    /** Name without its class prefix: {@code InvoiceRepository.findByCustomer} becomes {@code findByCustomer}. */
+    public String simpleName() {
+        int dot = name.lastIndexOf('.');
+        return dot >= 0 ? name.substring(dot + 1) : name;
+    }
+
+    public CodeUnit withEntrypoint(boolean value) {
+        return new CodeUnit(file, language, name, kind, startLine, endLine, code, calls, value);
+    }
 }

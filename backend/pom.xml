@@ -19,10 +19,43 @@
 
     <properties>
         <java.version>21</java.version>
+        <tree-sitter.version>0.26.6</tree-sitter.version>
         <jgit.version>6.9.0.202403050737-r</jgit.version>
     </properties>
 
     <dependencies>
+        <!-- tree-sitter parsing (JNI bindings with prebuilt natives) -->
+        <dependency>
+            <groupId>io.github.bonede</groupId>
+            <artifactId>tree-sitter</artifactId>
+            <version>${tree-sitter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonede</groupId>
+            <artifactId>tree-sitter-python</artifactId>
+            <version>0.25.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonede</groupId>
+            <artifactId>tree-sitter-javascript</artifactId>
+            <version>0.25.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonede</groupId>
+            <artifactId>tree-sitter-typescript</artifactId>
+            <version>0.23.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonede</groupId>
+            <artifactId>tree-sitter-java</artifactId>
+            <version>0.23.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonede</groupId>
+            <artifactId>tree-sitter-tsx</artifactId>
+            <version>0.23.2</version>
+        </dependency>
+
         <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
