@@ -6,20 +6,23 @@ Share of labelled vulnerabilities whose code is sent to the LLM when each select
 
 | Selector | @250 | @500 | @1000 | @2000 | @3000 | @all | Lines sent (all) | Select ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| legacy-regex | 40% (12/30) | 60% (18/30) | 63% (19/30) | 63% (19/30) | 63% (19/30) | 63% (19/30) | 2036 | 74 |
-| structure | 63% (19/30) | 77% (23/30) | 83% (25/30) | 97% (29/30) | 100% (30/30) | 100% (30/30) | 3695 | 952 |
+| legacy-regex | 40% (12/30) | 60% (18/30) | 63% (19/30) | 63% (19/30) | 63% (19/30) | 63% (19/30) | 2036 | 72 |
+| structure | 63% (19/30) | 77% (23/30) | 83% (25/30) | 97% (29/30) | 100% (30/30) | 100% (30/30) | 3695 | 935 |
+| semgrep | 60% (18/30) | 77% (23/30) | 87% (26/30) | 93% (28/30) | 100% (30/30) | 100% (30/30) | 3695 | 176049 |
 
 ## dvpwa (4 vulns, 675 lines of code)
 
 | Selector | @250 | @500 | @1000 | @2000 | @3000 | @all | Lines sent (all) | Select ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | legacy-regex | 75% (3/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 624 | 25 |
-| structure | 50% (2/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 493 | 246 |
+| structure | 50% (2/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 493 | 244 |
+| semgrep | 50% (2/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 100% (4/4) | 493 | 82067 |
 
 <details><summary>Missed at unlimited budget</summary>
 
 - **legacy-regex**: none
 - **structure**: none
+- **semgrep**: none
 
 </details>
 
@@ -27,13 +30,15 @@ Share of labelled vulnerabilities whose code is sent to the LLM when each select
 
 | Selector | @250 | @500 | @1000 | @2000 | @3000 | @all | Lines sent (all) | Select ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| legacy-regex | 17% (2/12) | 42% (5/12) | 50% (6/12) | 50% (6/12) | 50% (6/12) | 50% (6/12) | 1098 | 40 |
-| structure | 33% (4/12) | 42% (5/12) | 58% (7/12) | 92% (11/12) | 100% (12/12) | 100% (12/12) | 2850 | 538 |
+| legacy-regex | 17% (2/12) | 42% (5/12) | 50% (6/12) | 50% (6/12) | 50% (6/12) | 50% (6/12) | 1098 | 38 |
+| structure | 33% (4/12) | 42% (5/12) | 58% (7/12) | 92% (11/12) | 100% (12/12) | 100% (12/12) | 2850 | 526 |
+| semgrep | 33% (4/12) | 42% (5/12) | 67% (8/12) | 83% (10/12) | 100% (12/12) | 100% (12/12) | 2850 | 33376 |
 
 <details><summary>Missed at unlimited budget</summary>
 
 - **legacy-regex**: nosql-where, plaintext-compare, log-injection, redos-routing, swig-autoescape-off, session-cookie-flags
 - **structure**: none
+- **semgrep**: none
 
 </details>
 
@@ -42,11 +47,13 @@ Share of labelled vulnerabilities whose code is sent to the LLM when each select
 | Selector | @250 | @500 | @1000 | @2000 | @3000 | @all | Lines sent (all) | Select ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | legacy-regex | 50% (7/14) | 64% (9/14) | 64% (9/14) | 64% (9/14) | 64% (9/14) | 64% (9/14) | 314 | 9 |
-| structure | 93% (13/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 352 | 168 |
+| structure | 93% (13/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 352 | 165 |
+| semgrep | 86% (12/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 100% (14/14) | 352 | 60606 |
 
 <details><summary>Missed at unlimited budget</summary>
 
 - **legacy-regex**: ts-open-redirect, java-sqli, java-xxe, java-weak-random-token, java-trust-all-tls
 - **structure**: none
+- **semgrep**: none
 
 </details>

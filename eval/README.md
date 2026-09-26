@@ -19,6 +19,10 @@ cd backend
 ./mvnw -q compile exec:java -Dexec.args="--selectors legacy-regex --benchmark nodegoat"
 ```
 
+Selectors that need Semgrep run only when `semgrep --version` works. Native Semgrep on Windows is unreliable;
+use WSL instead (`SEMGREP_CMD="wsl.exe -e /home/<you>/.venvs/semgrep/bin/semgrep"`) or rely on the CI `eval` job,
+which installs Semgrep on Linux and uploads the report as an artifact.
+
 ## What is measured
 
 **Candidate recall@budget.** Each selector returns code units in priority order. We take them greedily

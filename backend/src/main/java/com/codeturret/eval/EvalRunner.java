@@ -38,8 +38,9 @@ public final class EvalRunner {
         BenchmarkWorkspace workspace = new BenchmarkWorkspace(root);
         GitProperties gitProps = new GitProperties();
 
-        List<String> selectorNames = List.of(opts.getOrDefault("selectors", String.join(",", Selectors.names())).split(","));
-        List<CandidateSelector> selectors = selectorNames.stream().map(n -> Selectors.create(n.strip(), gitProps)).toList();
+        Selectors registry = new Selectors(gitProps);
+        List<String> selectorNames = List.of(opts.getOrDefault("selectors", String.join(",", registry.available())).split(","));
+        List<CandidateSelector> selectors = selectorNames.stream().map(n -> registry.create(n.strip())).toList();
 
         List<Benchmark> benchmarks = workspace.loadAll();
         String only = opts.get("benchmark");
