@@ -34,7 +34,7 @@ llm:
   openai:
     api-key: ${OPENAI_API_KEY:}
     base-url: https://api.openai.com/v1
-    fast-model: ${OPENAI_FAST_MODEL:gpt-5.4-mini}
+    fast-model: ${OPENAI_FAST_MODEL:gpt-5.6-luna}
     strong-model: ${OPENAI_STRONG_MODEL:gpt-5.5}
   gemini:
     api-key: ${GEMINI_API_KEY:}

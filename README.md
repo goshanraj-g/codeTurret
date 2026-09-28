@@ -97,7 +97,7 @@ eval/: benchmarks with ground truth + EvalRunner
 | Parsing | tree-sitter (JNI bindings) |
 | Static analysis | Semgrep (optional) |
 | ML | scikit-learn → ONNX, run with ONNX Runtime Java |
-| LLM | OpenAI GPT-5.4 mini + GPT-5.5 (default) or Google Gemini 2.5 Flash + Pro |
+| LLM | OpenAI GPT-5.6 Luna + GPT-5.5 (default) or Google Gemini 2.5 Flash + Pro |
 | Q&A | Snowflake Cortex |
 | Frontend | Next.js, Tailwind CSS |
 

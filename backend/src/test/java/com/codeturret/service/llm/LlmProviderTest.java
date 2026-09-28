@@ -15,8 +15,8 @@ class LlmProviderTest {
     void openAiRequestUsesJsonModeOnlyWhenAskedAndNoTemperature() {
         OpenAiProvider p = new OpenAiProvider("sk-test", "https://api.openai.com/v1");
 
-        Map<String, Object> jsonBody = p.requestBody("gpt-5.4-mini", "Return JSON only", true);
-        assertThat(jsonBody).containsEntry("model", "gpt-5.4-mini")
+        Map<String, Object> jsonBody = p.requestBody("gpt-5.6-luna", "Return JSON only", true);
+        assertThat(jsonBody).containsEntry("model", "gpt-5.6-luna")
             .containsEntry("response_format", Map.of("type", "json_object"))
             .doesNotContainKey("temperature");
 
