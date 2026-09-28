@@ -25,16 +25,22 @@ spring:
           enabled: true
           max-attempts: 3
 
-gemini:
-  api-key: ${GEMINI_API_KEY}
-  base-url: https://generativelanguage.googleapis.com/v1beta
-  model:
-    flash: gemini-2.5-flash
-    pro: gemini-2.5-pro
-  timeout-seconds: 60
+llm:
+  provider: ${LLM_PROVIDER:openai}
+  timeout-seconds: 120
   max-retries: 2
-  max-concurrency: ${GEMINI_MAX_CONCURRENCY:4}
+  max-concurrency: ${LLM_MAX_CONCURRENCY:4}
   deep-scan-threshold: 0.7
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    base-url: https://api.openai.com/v1
+    fast-model: ${OPENAI_FAST_MODEL:gpt-5.6-luna}
+    strong-model: ${OPENAI_STRONG_MODEL:gpt-5.5}
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    base-url: https://generativelanguage.googleapis.com/v1beta
+    fast-model: gemini-2.5-flash
+    strong-model: gemini-2.5-pro
 
 engine:
   line-budget: ${ENGINE_LINE_BUDGET:3000}

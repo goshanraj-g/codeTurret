@@ -3,7 +3,7 @@ package com.codeturret.config;
 import com.codeturret.engine.DetectionEngine;
 import com.codeturret.engine.staticanalysis.SemgrepRunner;
 import com.codeturret.engine.staticanalysis.StaticAnalyzer;
-import com.codeturret.service.GeminiService;
+import com.codeturret.service.LlmService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -16,12 +16,12 @@ import static org.mockito.Mockito.mock;
 /** Wiring of the engine beans without a database or message broker. */
 class EngineConfigTest {
 
-    @EnableConfigurationProperties({EngineProperties.class, GeminiProperties.class, GitProperties.class})
+    @EnableConfigurationProperties({EngineProperties.class, LlmProperties.class, GitProperties.class})
     static class Props {}
 
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
         .withUserConfiguration(Props.class, EngineConfig.class)
-        .withBean(GeminiService.class, () -> mock(GeminiService.class));
+        .withBean(LlmService.class, () -> mock(LlmService.class));
 
     @Test
     void buildsEngineWithSemgrepByDefault() {

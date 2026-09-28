@@ -153,7 +153,7 @@ export default function ScanPage() {
                                 </div>
                                 <div className="text-sm">
                                     <span className="block font-medium text-white">Deep Analysis</span>
-                                    <span className="text-xs text-muted-foreground">Slower, more accurate (Gemini Pro)</span>
+                                    <span className="text-xs text-muted-foreground">Slower, more accurate (strong model)</span>
                                 </div>
                             </div>
                         </div>
@@ -187,7 +187,7 @@ export default function ScanPage() {
                             <span className="text-sm font-semibold">AI Capabilities</span>
                         </div>
                         <p className="text-sm text-purple-200/70 leading-relaxed">
-                            Hybrid AI architecture: <b>Gemini Flash</b> for rapid triage, <b>Gemini Pro</b> for deep analysis on high-risk findings.
+                            Hybrid AI architecture: a <b>fast model</b> for rapid triage, a <b>strong model</b> for deep analysis on high-risk findings.
                             Results stream in real-time via SSE.
                         </p>
                     </motion.div>

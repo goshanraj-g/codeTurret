@@ -1,6 +1,7 @@
 package com.codeturret.service;
 
-import com.codeturret.config.GeminiProperties;
+import com.codeturret.config.LlmProperties;
+import com.codeturret.service.llm.LlmProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -10,15 +11,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/** Provider-neutral LLM calls (prompts, retries). The vendor-specific HTTP shape lives in {@link LlmProvider}. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GeminiService {
+public class LlmService {
 
-    private final GeminiProperties geminiProperties;
+    private final LlmProperties llmProperties;
+    private final LlmProvider provider;
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
 
@@ -30,7 +33,7 @@ public class GeminiService {
 
     /** Sends a prompt that asks for JSON and returns the model's text. Used by the detection engine's verifier. */
     public String generateJson(String model, String prompt) {
-        return extractText(callGemini(model, prompt));
+        return call(model, prompt, true);
     }
 
     /** Generate a corrected version of a file given findings. Returns patched content or null. */
@@ -56,10 +59,9 @@ public class GeminiService {
             "Return only the raw source code.";
 
         try {
-            JsonNode response = callGemini(geminiProperties.getModel().getPro(), prompt);
-            String text = extractText(response);
+            // Plain text, not JSON mode: the answer is a source file.
+            String text = call(llmProperties.active().getStrongModel(), prompt, false).strip();
             // Strip markdown code fences if present
-            text = text.strip();
             if (text.startsWith("```")) {
                 text = text.replaceFirst("```[a-zA-Z]*\\n?", "");
                 int end = text.lastIndexOf("```");
@@ -72,51 +74,27 @@ public class GeminiService {
         }
     }
 
-    /** Ask a question about a repo's findings. */
-    public String askAboutFindings(String findingsSummary, String question) {
-        String prompt = "You are a security consultant analyzing scan results.\n\n" +
-            "SCAN FINDINGS SUMMARY:\n" + findingsSummary + "\n\n" +
-            "QUESTION: " + question + "\n\n" +
-            "Provide a clear, concise answer based on the findings above.";
-        try {
-            JsonNode response = callGemini(geminiProperties.getModel().getFlash(), prompt);
-            return extractText(response);
-        } catch (Exception e) {
-            return "Unable to answer: " + e.getMessage();
-        }
-    }
-
     // -- API call ------------------------------------------------------------
 
-    private JsonNode callGemini(String model, String prompt) {
-        String url = geminiProperties.getBaseUrl() + "/models/" + model + ":generateContent";
-
-        Map<String, Object> body = Map.of(
-            "contents", List.of(Map.of("parts", List.of(Map.of("text", prompt)))),
-            "generationConfig", Map.of(
-                "responseMimeType", "application/json",
-                "temperature", 0.1
-            )
-        );
-
-        int attempts = geminiProperties.getMaxRetries() + 1;
+    private String call(String model, String prompt, boolean json) {
+        int attempts = llmProperties.getMaxRetries() + 1;
         for (int attempt = 1; attempt <= attempts; attempt++) {
             try {
-                String json = webClient.post()
-                    .uri(url)
-                    // Header rather than ?key= so the key never lands in URLs, proxies, or access logs.
-                    .header("x-goog-api-key", geminiProperties.getApiKey())
+                String response = webClient.post()
+                    .uri(provider.url(model))
+                    .headers(h -> provider.headers().forEach(h::set))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(body)
+                    .bodyValue(provider.requestBody(model, prompt, json))
                     .retrieve()
                     .bodyToMono(String.class)
-                    .timeout(Duration.ofSeconds(geminiProperties.getTimeoutSeconds()))
+                    .timeout(Duration.ofSeconds(llmProperties.getTimeoutSeconds()))
                     .block();
-                return objectMapper.readTree(json);
+                JsonNode tree = objectMapper.readTree(response);
+                return provider.extractText(tree);
             } catch (Exception e) {
-                log.warn("Gemini attempt {}/{} failed: {}", attempt, attempts, e.getMessage());
+                log.warn("LLM attempt {}/{} ({}) failed: {}", attempt, attempts, model, e.getMessage());
                 if (attempt == attempts) {
-                    throw new RuntimeException("Gemini call failed after " + attempt + " attempts: " + e.getMessage(), e);
+                    throw new RuntimeException("LLM call failed after " + attempt + " attempts: " + e.getMessage(), e);
                 }
                 // Exponential backoff with jitter, so concurrent verifiers don't retry in lockstep after a 429.
                 long delay = (1000L << attempt) + ThreadLocalRandom.current().nextLong(500);
@@ -124,11 +102,5 @@ public class GeminiService {
             }
         }
         throw new IllegalStateException("unreachable");
-    }
-
-    private String extractText(JsonNode response) {
-        return response.path("candidates").get(0)
-            .path("content").path("parts").get(0)
-            .path("text").asText();
     }
 }

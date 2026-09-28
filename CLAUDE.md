@@ -6,7 +6,7 @@ static-analysis + ML + LLM engine, streams progress, and can open auto-fix PRs.
 - **Backend:** Java 21, Spring Boot 3.3 (`backend/`). RabbitMQ workers (`ScanWorker`, `FixWorker`), SSE progress.
 - **Storage:** PostgreSQL + Flyway (`backend/src/main/resources/db/migration`). Snowflake Cortex is used only by the Ask feature.
 - **Detection engine:** `com.codeturret.engine`. See `docs/architecture/detection-engine.md`.
-  Parse (tree-sitter) → candidates (Semgrep + ONNX classifier + git) → rank under a line budget → LLM verify (Gemini).
+  Parse (tree-sitter) → candidates (Semgrep + ONNX classifier + git) → rank under a line budget → LLM verify (OpenAI by default, or Gemini; `llm.provider`).
 - **ML:** `ml/` (Python) trains the vulnerability classifier and exports ONNX into `backend/src/main/resources/ml/`.
 - **Eval:** `eval/` holds benchmarks with ground truth. Use it to measure any engine change.
 - **Frontend:** Next.js (`frontend/`).

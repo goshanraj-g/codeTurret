@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AutoFixService {
 
-    private final GeminiService geminiService;
+    private final LlmService llmService;
 
     public record FileFixResult(String filePath, String patchedContent, int findingsFixed, String error) {}
 
@@ -45,15 +45,15 @@ public class AutoFixService {
             }
 
             try {
-                List<GeminiService.FindingRaw> raws = findings.stream()
-                    .map(f -> new GeminiService.FindingRaw(
+                List<LlmService.FindingRaw> raws = findings.stream()
+                    .map(f -> new LlmService.FindingRaw(
                         f.getLineNumber(), f.getSeverity().name(), f.getVulnType(),
                         f.getDescription(), f.getFixSuggestion(), f.getConfidence(),
                         f.getCodeSnippet(), null, null
                     ))
                     .toList();
 
-                String patched = geminiService.generateFix(content, filePath, raws);
+                String patched = llmService.generateFix(content, filePath, raws);
                 if (patched != null && !patched.isBlank()) {
                     results.add(new FileFixResult(filePath, patched, findings.size(), null));
                 } else {
