@@ -12,6 +12,7 @@ import com.codeturret.engine.staticanalysis.StaticAnalyzer;
 import com.codeturret.engine.staticanalysis.StaticHit;
 import com.codeturret.engine.verify.EngineFinding;
 import com.codeturret.engine.verify.LlmVerifier;
+import com.codeturret.engine.verify.VerificationHealth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public final class DetectionEngine {
     public record Options(int lineBudget, int maxConcurrency, int maxFileBytes) {}
 
     public record Result(List<EngineFinding> findings, int filesAnalyzed, int unitsAnalyzed, int linesAnalyzed,
-                         int staticHits, boolean mlEnabled) {}
+                         int staticHits, boolean mlEnabled, VerificationHealth health) {}
 
     /** Callbacks are invoked on the thread that called {@link #run}, in completion order. */
     public interface Listener {
@@ -77,6 +78,7 @@ public final class DetectionEngine {
             files.size(), index.units().size(), hits.size(), selected.size(), lines, byFile.size());
         listener.started(byFile.size(), selected.size());
 
+        VerificationHealth health = new VerificationHealth();
         ExecutorService pool = Executors.newFixedThreadPool(Math.max(1, options.maxConcurrency()));
         CompletionService<Map.Entry<String, List<EngineFinding>>> done = new ExecutorCompletionService<>(pool);
         try {
@@ -84,7 +86,7 @@ public final class DetectionEngine {
                 String file = e.getKey();
                 List<StaticHit> fileHits = hits.stream().filter(h -> h.file().equals(file)).toList();
                 done.submit(() -> Map.entry(file,
-                    verifier.verifyFile(file, e.getValue(), index, fileHits, repoContext, deepScan)));
+                    verifier.verifyFile(file, e.getValue(), index, fileHits, repoContext, deepScan, health)));
             }
             List<EngineFinding> all = new ArrayList<>();
             for (int i = 0; i < byFile.size(); i++) {
@@ -93,12 +95,13 @@ public final class DetectionEngine {
                     r = done.take().get();
                 } catch (ExecutionException ex) {
                     log.warn("Verification task failed: {}", ex.getCause().getMessage());
+                    health.record(VerificationHealth.Problem.TASK_FAILED);
                     continue;
                 }
                 all.addAll(r.getValue());
                 listener.fileVerified(r.getKey(), r.getValue());
             }
-            return new Result(all, byFile.size(), selected.size(), lines, hits.size(), classifier.isLoaded());
+            return new Result(all, byFile.size(), selected.size(), lines, hits.size(), classifier.isLoaded(), health);
         } finally {
             pool.shutdownNow();
         }

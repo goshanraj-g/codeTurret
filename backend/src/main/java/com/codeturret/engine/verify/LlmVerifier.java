@@ -37,26 +37,42 @@ public final class LlmVerifier {
 
     public List<EngineFinding> verifyFile(String file, List<Candidate> units, CodeIndex index, List<StaticHit> hits,
                                           String repoContext, boolean deepScan) {
+        return verifyFile(file, units, index, hits, repoContext, deepScan, new VerificationHealth());
+    }
+
+    /** As above, recording any problem absorbed along the way in {@code health}. */
+    public List<EngineFinding> verifyFile(String file, List<Candidate> units, CodeIndex index, List<StaticHit> hits,
+                                          String repoContext, boolean deepScan, VerificationHealth health) {
         String prompt = VerificationPrompt.triage(file, units, index, hits, repoContext);
         String json;
         try {
             json = client.completeJson(models.fast(), prompt);
         } catch (Exception e) {
             log.warn("LLM verification failed for {} ({}); reporting static hits only", file, e.getMessage());
+            health.record(VerificationHealth.Problem.LLM_CALL_FAILED);
             return staticOnly(file, units, hits);
         }
 
-        List<Raw> raws = parse(json);
+        Optional<List<Raw>> firstPass = parse(json);
+        if (firstPass.isEmpty()) health.record(VerificationHealth.Problem.LLM_UNPARSEABLE);
+        List<Raw> raws = firstPass.orElse(List.of());
         String modelUsed = models.fast();
         boolean escalate = deepScan || raws.stream().anyMatch(r ->
             r.confidence() < models.escalationConfidence()
                 || "CRITICAL".equals(r.severity()) || "HIGH".equals(r.severity()));
         if (escalate && !raws.isEmpty()) {
             try {
-                raws = parse(client.completeJson(models.strong(), VerificationPrompt.deep(prompt, json)));
-                modelUsed = models.strong();
+                Optional<List<Raw>> deep = parse(client.completeJson(models.strong(), VerificationPrompt.deep(prompt, json)));
+                if (deep.isPresent()) {
+                    raws = deep.get();
+                    modelUsed = models.strong();
+                } else {
+                    log.warn("Escalation for {} returned an unreadable response; keeping first-pass results", file);
+                    health.record(VerificationHealth.Problem.ESCALATION_UNPARSEABLE);
+                }
             } catch (Exception e) {
                 log.warn("Escalation failed for {} ({}); keeping first-pass results", file, e.getMessage());
+                health.record(VerificationHealth.Problem.ESCALATION_CALL_FAILED);
             }
         }
 
@@ -89,12 +105,14 @@ public final class LlmVerifier {
         return out;
     }
 
-    static List<Raw> parse(String json) {
+    /** The findings in a model response, or empty if the response isn't readable JSON. */
+    static Optional<List<Raw>> parse(String json) {
         try {
             String text = json.strip();
             if (text.startsWith("```")) text = text.replaceFirst("^```[a-zA-Z]*\\s*", "").replaceFirst("```\\s*$", "");
             JsonNode root = JSON.readTree(text);
             JsonNode arr = root.isArray() ? root : root.path("findings");
+            if (!arr.isArray()) throw new IllegalArgumentException("no findings array");
             List<Raw> out = new ArrayList<>();
             for (JsonNode n : arr) {
                 JsonNode line = n.path("line_number");
@@ -107,10 +125,10 @@ public final class LlmVerifier {
                     n.path("fix_suggestion").isMissingNode() || n.path("fix_suggestion").isNull() ? null : n.path("fix_suggestion").asText(),
                     Math.max(0, Math.min(1, n.path("confidence").asDouble(0.5)))));
             }
-            return out;
+            return Optional.of(out);
         } catch (Exception e) {
             log.warn("Could not parse LLM response: {}", e.getMessage());
-            return List.of();
+            return Optional.empty();
         }
     }
 

@@ -230,6 +230,11 @@ llm:
 | tree-sitter cannot parse a file | file becomes one `MODULE` unit |
 | LLM 429 | exponential backoff (max 3 tries), then that file is marked skipped in progress events |
 | LLM unavailable | static hits are reported as `STATIC` findings with capped confidence |
+| LLM answer isn't the expected JSON | triage: the file gets no findings; escalation: first-pass findings are kept |
+
+Each of the LLM failures above is counted in `VerificationHealth` and returned with the engine result. The scan
+still completes, but `ScanHealthReporter` sends a Sentry warning when 30% or more of the files never got an LLM
+verdict, or when any response was unreadable, so an expired key or a model format change doesn't go unnoticed.
 
 ## 7. PR stack
 

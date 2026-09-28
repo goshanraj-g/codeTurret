@@ -8,6 +8,7 @@ import com.codeturret.messaging.ProgressPublisher;
 import com.codeturret.messaging.RabbitConfig;
 import com.codeturret.messaging.ScanJobMessage;
 import com.codeturret.model.*;
+import com.codeturret.observability.ScanHealthReporter;
 import com.codeturret.repository.FindingRepo;
 import com.codeturret.repository.ScanRepo;
 import com.codeturret.service.GitService;
@@ -42,6 +43,7 @@ public class ScanWorker {
     private final ProgressPublisher progress;
     private final ObjectMapper objectMapper;
     private final LlmProperties llm;
+    private final ScanHealthReporter healthReporter;
 
     @RabbitListener(queues = RabbitConfig.SCAN_QUEUE)
     public void handleScanJob(ScanJobMessage msg) {
@@ -95,6 +97,7 @@ public class ScanWorker {
                     progress.fileScanned(scanId, file, findings.size(), topSeverity(findings));
                 }
             });
+            healthReporter.report(result.filesAnalyzed(), result.health());
 
             scan.setStatus(ScanStatus.COMPLETED);
             scan.setCompletedAt(Instant.now());
