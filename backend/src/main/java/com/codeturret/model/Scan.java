@@ -43,6 +43,9 @@ public class Scan {
     @Column(name = "static_hits")
     private Integer staticHits;
 
+    @Column(name = "queued_at", nullable = false, updatable = false)
+    private Instant queuedAt = Instant.now();
+
     @Column(name = "started_at")
     private Instant startedAt;
 
