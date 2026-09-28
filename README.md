@@ -147,6 +147,10 @@ Set `SENTRY_DSN` in `backend/.env` to send backend errors to [Sentry](https://se
 sent. Events are tagged with the scan ID, and credentials and scanned code are scrubbed before they leave the
 server (`SentryScrubber`).
 
+The frontend reports to its own Sentry project. Set `NEXT_PUBLIC_SENTRY_DSN` in `frontend/.env.local`, and put
+`SENTRY_AUTH_TOKEN` in `frontend/.env.sentry-build-plugin` to upload source maps during `npm run build`. Session
+Replay is off, and request bodies, headers and stack-frame variables are not collected (`frontend/lib/sentry.ts`).
+
 ---
 
 ## API
