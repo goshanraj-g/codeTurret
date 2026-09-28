@@ -141,6 +141,12 @@ cd backend && ./mvnw -q compile exec:java       # run the benchmark → eval/res
 cd ml && python train.py                         # retrain the classifier (see ml/README.md)
 ```
 
+### Error reporting (optional)
+
+Set `SENTRY_DSN` in `backend/.env` to send backend errors to [Sentry](https://sentry.io). Without it, nothing is
+sent. Events are tagged with the scan ID, and credentials and scanned code are scrubbed before they leave the
+server (`SentryScrubber`).
+
 ---
 
 ## API

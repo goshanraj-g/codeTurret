@@ -1,5 +1,6 @@
 package com.codeturret.worker;
 
+import com.codeturret.config.LlmProperties;
 import com.codeturret.engine.DetectionEngine;
 import com.codeturret.engine.model.GitSignals;
 import com.codeturret.engine.verify.EngineFinding;
@@ -12,6 +13,8 @@ import com.codeturret.repository.ScanRepo;
 import com.codeturret.service.GitService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.sentry.ISentryLifecycleToken;
+import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -38,9 +41,21 @@ public class ScanWorker {
     private final DetectionEngine engine;
     private final ProgressPublisher progress;
     private final ObjectMapper objectMapper;
+    private final LlmProperties llm;
 
     @RabbitListener(queues = RabbitConfig.SCAN_QUEUE)
     public void handleScanJob(ScanJobMessage msg) {
+        // Tag everything Sentry records during this job, so an error links back to its scan row.
+        try (ISentryLifecycleToken ignored = Sentry.pushIsolationScope()) {
+            Sentry.setTag("scan.id", msg.getScanId());
+            Sentry.setTag("job", "scan");
+            Sentry.setTag("llm.provider", llm.getProvider());
+            Sentry.setTag("deep_scan", String.valueOf(msg.isDeepScan()));
+            runScan(msg);
+        }
+    }
+
+    private void runScan(ScanJobMessage msg) {
         String scanId = msg.getScanId();
         log.info("Starting scan job: {}", scanId);
 
