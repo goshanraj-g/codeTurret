@@ -61,6 +61,7 @@ class DetectionEngineTest {
             assertThat(result.findings()).hasSize(verifiedFiles.size())
                 .allSatisfy(f -> assertThat(f.source()).isEqualTo(EngineFinding.Source.LLM));
             assertThat(result.mlEnabled()).isTrue();
+            assertThat(result.health().unverifiedFiles()).isZero();
         }
     }
 }

@@ -106,4 +106,31 @@ class LlmVerifierTest {
         LlmClient garbage = (model, prompt) -> "not json";
         assertThat(new LlmVerifier(garbage, models).verifyFile("admin.js", units, index, List.of(), "", false)).isEmpty();
     }
+
+    @Test
+    void recordsCallFailuresAndUnreadableResponses() {
+        VerificationHealth health = new VerificationHealth();
+        new LlmVerifier((m, p) -> { throw new RuntimeException("401"); }, models)
+            .verifyFile("admin.js", units, index, List.of(hit), "", false, health);
+        new LlmVerifier((m, p) -> "not json", models).verifyFile("admin.js", units, index, List.of(), "", false, health);
+        new LlmVerifier((m, p) -> "{\"results\": []}", models).verifyFile("admin.js", units, index, List.of(), "", false, health);
+
+        assertThat(health.count(VerificationHealth.Problem.LLM_CALL_FAILED)).isEqualTo(1);
+        assertThat(health.count(VerificationHealth.Problem.LLM_UNPARSEABLE)).isEqualTo(2);
+        assertThat(health.unverifiedFiles()).isEqualTo(3);
+    }
+
+    @Test
+    void unreadableEscalationKeepsFirstPassFindings() {
+        LlmClient fake = (model, prompt) -> model.equals("fast")
+            ? "{\"findings\": [{\"line_number\": 5, \"severity\": \"HIGH\", \"vuln_type\": \"Command Injection\", \"confidence\": 0.9}]}"
+            : "Sorry, I can't help with that.";
+        VerificationHealth health = new VerificationHealth();
+
+        List<EngineFinding> out = new LlmVerifier(fake, models).verifyFile("admin.js", units, index, List.of(), "", false, health);
+
+        assertThat(out).singleElement().satisfies(f -> assertThat(f.modelUsed()).isEqualTo("fast"));
+        assertThat(health.count(VerificationHealth.Problem.ESCALATION_UNPARSEABLE)).isEqualTo(1);
+        assertThat(health.unverifiedFiles()).isZero();
+    }
 }
