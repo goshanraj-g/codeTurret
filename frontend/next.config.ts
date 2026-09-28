@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
 // gitignored .env.sentry-build-plugin.
 export default withSentryConfig(nextConfig, {
   org: "polar-he",
-  project: process.env.SENTRY_PROJECT ?? "codeturret-frontend",
+  project: process.env.SENTRY_PROJECT ?? "coreturretfrontend",
   // Route browser events through our own server, so ad blockers don't drop them.
   tunnelRoute: "/monitoring",
   widenClientFileUpload: true,
