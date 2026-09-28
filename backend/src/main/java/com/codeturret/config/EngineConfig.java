@@ -8,7 +8,7 @@ import com.codeturret.engine.rank.RankerWeights;
 import com.codeturret.engine.staticanalysis.SemgrepRunner;
 import com.codeturret.engine.staticanalysis.StaticAnalyzer;
 import com.codeturret.engine.verify.LlmVerifier;
-import com.codeturret.service.GeminiService;
+import com.codeturret.service.LlmService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,14 +32,14 @@ public class EngineConfig {
     }
 
     @Bean
-    public DetectionEngine detectionEngine(EngineProperties props, GeminiProperties gemini, GitProperties git,
+    public DetectionEngine detectionEngine(EngineProperties props, LlmProperties llm, GitProperties git,
                                            VulnClassifier classifier, StaticAnalyzer staticAnalyzer,
-                                           GeminiService geminiService) {
+                                           LlmService llmService) {
         EngineProperties.Weights w = props.getWeights();
         RankerWeights weights = new RankerWeights(w.getMl(), w.getStaticAnalysis(), w.getReachability(), w.getGit(), w.getStructure());
-        LlmVerifier verifier = new LlmVerifier(geminiService::generateJson, new LlmVerifier.Models(
-            gemini.getModel().getFlash(), gemini.getModel().getPro(), gemini.getDeepScanThreshold()));
+        LlmVerifier verifier = new LlmVerifier(llmService::generateJson, new LlmVerifier.Models(
+            llm.active().getFastModel(), llm.active().getStrongModel(), llm.getDeepScanThreshold()));
         return new DetectionEngine(new CodeParser(), classifier, staticAnalyzer, new CandidateRanker(weights), verifier,
-            new DetectionEngine.Options(props.getLineBudget(), gemini.getMaxConcurrency(), git.getMaxFileSize()));
+            new DetectionEngine.Options(props.getLineBudget(), llm.getMaxConcurrency(), git.getMaxFileSize()));
     }
 }

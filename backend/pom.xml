@@ -70,7 +70,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- WebClient (used as HTTP client for Gemini + GitHub APIs) -->
+        <!-- WebClient (used as HTTP client for the LLM + GitHub APIs) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>

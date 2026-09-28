@@ -160,7 +160,7 @@ from 40 files beat 25 whole files.
   its callers' signatures, entrypoint status, and git context.
 - The prompt asks the model to **reject** false positives explicitly and to report `exploitability`
   reasoning. Low-confidence or HIGH/CRITICAL results escalate to the Pro model, as in v1.
-- Calls run with bounded concurrency (a semaphore sized by `gemini.max-concurrency`) and retry with backoff on
+- Calls run with bounded concurrency (a semaphore sized by `llm.max-concurrency`) and retry with backoff on
   429 responses, replacing the fixed `sleep`.
 - Each finding records a **`source`**: `LLM` (found by the LLM in ML/structure-ranked code),
   `STATIC+LLM` (a Semgrep hit confirmed by the LLM), or `STATIC` (a Semgrep hit with the LLM unavailable, reported at
@@ -216,7 +216,8 @@ engine:
   weights: { ml: 0.35, static: 0.30, reachability: 0.15, git: 0.10, structure: 0.10 }
   semgrep: { enabled: true, timeout-seconds: 300, configs: [p/security-audit, p/python, p/javascript, p/typescript, p/java] }
   classifier: { model-path: classpath:ml/vuln-classifier.onnx }
-gemini:
+llm:
+  provider: openai          # or gemini
   max-concurrency: 4
 ```
 
@@ -227,8 +228,8 @@ gemini:
 | Semgrep missing or times out | `static` = 0 for all units; logged once; scan continues |
 | ONNX model missing or incompatible | `ml` = 0.5 (neutral); warning logged; scan continues |
 | tree-sitter cannot parse a file | file becomes one `MODULE` unit |
-| Gemini 429 | exponential backoff (max 3 tries), then that file is marked skipped in progress events |
-| Gemini unavailable | static hits are reported as `STATIC` findings with capped confidence |
+| LLM 429 | exponential backoff (max 3 tries), then that file is marked skipped in progress events |
+| LLM unavailable | static hits are reported as `STATIC` findings with capped confidence |
 
 ## 7. PR stack
 

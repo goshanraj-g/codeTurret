@@ -34,8 +34,8 @@ JavaScript function after the first. Full tables, per-repo breakdowns, and an ab
  clone ─► PARSE        tree-sitter → functions/methods (Python, JS, TS, TSX, Java) + name-based call graph
       ─► SIGNALS      Semgrep hits · ML P(vulnerable) · reachability from route handlers · dangerous sink calls · git history
       ─► RANK         weighted score per function; Semgrep hits always verified; fill a fixed line budget
-      ─► VERIFY       Gemini Flash per file with line numbers, callers, and Semgrep hints ("confirm or reject")
-                      → escalate to Gemini Pro for HIGH/CRITICAL or low-confidence findings
+      ─► VERIFY       fast LLM per file with line numbers, callers, and Semgrep hints ("confirm or reject")
+                      → escalate to a strong LLM for HIGH/CRITICAL or low-confidence findings
       ─► PERSIST      each finding stores its source (AI / Semgrep + AI / Semgrep only) and why it was analysed
 ```
 
@@ -97,7 +97,7 @@ eval/: benchmarks with ground truth + EvalRunner
 | Parsing | tree-sitter (JNI bindings) |
 | Static analysis | Semgrep (optional) |
 | ML | scikit-learn → ONNX, run with ONNX Runtime Java |
-| LLM | Google Gemini 2.5 Flash + 2.5 Pro |
+| LLM | OpenAI GPT-5.4 mini + GPT-5.5 (default) or Google Gemini 2.5 Flash + Pro |
 | Q&A | Snowflake Cortex |
 | Frontend | Next.js, Tailwind CSS |
 
@@ -109,7 +109,7 @@ eval/: benchmarks with ground truth + EvalRunner
 - Java 21 (Maven is bundled via `./mvnw`)
 - Docker Desktop (PostgreSQL + RabbitMQ)
 - Node.js 20+
-- A [Gemini API key](https://aistudio.google.com)
+- An [OpenAI API key](https://platform.openai.com/api-keys) (or a [Gemini key](https://aistudio.google.com) with `LLM_PROVIDER=gemini`)
 - Optional: [Semgrep](https://semgrep.dev/docs/getting-started/) (`pip install semgrep`; on Windows, use WSL and set `SEMGREP_CMD`)
 - Optional: a Snowflake account for the Ask feature
 
@@ -120,7 +120,7 @@ eval/: benchmarks with ground truth + EvalRunner
 cd backend
 docker-compose up -d
 
-# 2. Configuration: fill in GEMINI_API_KEY and ENCRYPTION_SECRET_KEY
+# 2. Configuration: fill in OPENAI_API_KEY and ENCRYPTION_SECRET_KEY
 cp .env.example .env
 
 # 3. Backend (Flyway creates the tables on first run)
