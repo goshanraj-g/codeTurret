@@ -11,6 +11,8 @@ import com.codeturret.repository.FindingRepo;
 import com.codeturret.repository.FixPrRepo;
 import com.codeturret.repository.ScanRepo;
 import com.codeturret.service.*;
+import io.sentry.ISentryLifecycleToken;
+import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -37,6 +39,14 @@ public class FixWorker {
     @RabbitListener(queues = RabbitConfig.FIX_QUEUE)
     @Transactional
     public void handleFixJob(FixJobMessage msg) {
+        try (ISentryLifecycleToken ignored = Sentry.pushIsolationScope()) {
+            Sentry.setTag("scan.id", msg.getScanId());
+            Sentry.setTag("job", "fix");
+            runFix(msg);
+        }
+    }
+
+    private void runFix(FixJobMessage msg) {
         String scanId = msg.getScanId();
         log.info("Starting fix job for scan: {}", scanId);
 

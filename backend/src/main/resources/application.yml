@@ -82,3 +82,15 @@ server:
 logging:
   level:
     com.codeturret: INFO
+
+# Error reporting. The DSN, environment and release come from SENTRY_DSN, SENTRY_ENVIRONMENT and SENTRY_RELEASE;
+# with no DSN, nothing is sent. Scanned code must never leave the server: see SentryScrubber.
+sentry:
+  send-default-pii: false
+  max-request-body-size: none
+  in-app-includes: com.codeturret
+  logging:
+    minimum-event-level: error
+    minimum-breadcrumb-level: info
+  ignored-exceptions-for-type:
+    - org.springframework.web.context.request.async.AsyncRequestNotUsableException
